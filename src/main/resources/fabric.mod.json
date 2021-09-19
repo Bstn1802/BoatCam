@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "boatcam",
+  "version": "${version}",
+  "name": "BoatCam",
+  "description": "Some nice tweaks to the boat and player camera for way cooler drifts on ice :D",
+  "authors": [
+    "Bstn1802"
+  ],
+  "contact": {
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/boatcam/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "boatcam.BoatCamMod"
+    ],
+    "modmenu": [
+      "boatcam.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "boatcam.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16",
+    "cloth-config2": ">=5.0.38"
+  },
+  "suggests": {
+    "modmenu": ">=2.0.4"
+  }
+}

@@ -1,0 +1,33 @@
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# fabric
+
+run/
+logs/
