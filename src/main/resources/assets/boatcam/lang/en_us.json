@@ -1,5 +1,14 @@
 {
+  "key.boatcam.toggle": "Toggle",
+  "key.boatcam.lookbehind": "Look behind",
   "text.autoconfig.boatcam.title": "BoatCam Config",
   "text.autoconfig.boatcam.option.boatMode": "BoatMode",
-  "text.autoconfig.boatcam.option.smoothness": "Smoothness"
+  "text.autoconfig.boatcam.option.smoothness": "Smoothness",
+  "text.autoconfig.boatcam.option.perspective": "Perspective",
+  "text.autoconfig.boatcam.option.perspective.none": "None",
+  "text.autoconfig.boatcam.option.perspective.firstPerson": "First person",
+  "text.autoconfig.boatcam.option.perspective.thirdPerson": "Third person",
+  "text.autoconfig.boatcam.option.fixedPitch": "Fixed pitch",
+  "text.autoconfig.boatcam.option.pitch": "Pitch",
+  "text.autoconfig.boatcam.option.turnLimitDisabled": "Turn limit disabled"
 }
