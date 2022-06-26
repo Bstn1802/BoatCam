@@ -16,8 +16,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.reflect.Field;
@@ -70,9 +69,9 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 					} catch (IllegalAccessException ignored) { }
 				})
 				.setEnumNameProvider(perspective -> switch ((BoatCamConfig.Perspective) perspective) {
-					case FIRST_PERSON -> new TranslatableText("text.autoconfig.boatcam.option.perspective.firstPerson");
-					case THIRD_PERSON -> new TranslatableText("text.autoconfig.boatcam.option.perspective.thirdPerson");
-					case NONE -> new TranslatableText("text.autoconfig.boatcam.option.perspective.none");
+					case FIRST_PERSON -> Text.translatable("text.autoconfig.boatcam.option.perspective.firstPerson");
+					case THIRD_PERSON -> Text.translatable("text.autoconfig.boatcam.option.perspective.thirdPerson");
+					case NONE -> Text.translatable("text.autoconfig.boatcam.option.perspective.none");
 				})
 				.build())
 			.map(AbstractConfigListEntry.class::cast)
@@ -84,7 +83,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		// key bind logic
 		if (TOGGLE.wasPressed()) {
 			getConfig().toggleBoatMode();
-			client.inGameHud.setOverlayMessage(new LiteralText(getConfig().isBoatMode() ? "Boat mode" : "Normal mode").styled(s -> s.withColor(GREEN)), false);
+			client.inGameHud.setOverlayMessage(Text.literal(getConfig().isBoatMode() ? "Boat mode" : "Normal mode").styled(s -> s.withColor(GREEN)), false);
 		}
 		// camera logic
 		assert client.player != null;
