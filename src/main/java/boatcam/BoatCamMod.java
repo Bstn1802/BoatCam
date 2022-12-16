@@ -41,6 +41,20 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	// states
 	private boolean lookingBehind = false;
 
+        // mouse stuff
+	private static double yawAccu = 0;
+        public static float getImpulseAndClearBuffer() {
+            var temp = yawAccu;
+            yawAccu = 0; 
+            return (float) temp * getSteerSens();
+        }
+        public static void addImpulse(double delta){
+            yawAccu += delta;
+        }
+        private static float getSteerSens(){
+            return 0.015625F*getConfig().getSensitivity(); 
+        }
+
 	@Override
 	public void onInitialize() {
 		AutoConfig.register(BoatCamConfig.class, JanksonConfigSerializer::new);
@@ -152,6 +166,8 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	private void calculateYaw(ClientPlayerEntity player, BoatEntity boat) {
 		// yaw calculations
 		float yaw = boat.getYaw();
+
+if ( !getConfig().shouldFixYaw() ){
 		if (boatPos != null) {
 			double dz = boat.getZ() - boatPos.z, dx = boat.getX() - boatPos.x;
 			if (dx != 0 || dz != 0) {
@@ -163,6 +179,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 			yaw = AngleUtil.lerp(getConfig().getSmoothness(), previousYaw, yaw);
 		}
 		player.setYaw(yaw);
+}
 		// save pos and yaw
 		previousYaw = yaw;
 		boatPos = boat.getPos();
@@ -175,6 +192,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 			if (player != null && player.getVehicle() instanceof BoatEntity && (dx != 0 || getConfig().shouldFixPitch() && dy != 0)) {
 				// prevent horizontal camera movement and cancel camera change by returning true
 				// prevent vertical movement as well if configured
+                                addImpulse(dx);
 				player.changeLookDirection(0, getConfig().shouldFixPitch() ? 0 : dy);
 				return true;
 			}
