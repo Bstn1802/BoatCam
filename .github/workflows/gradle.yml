@@ -10,8 +10,8 @@ name: Java CI with Gradle
 on:
   push:
     tags: 
-      - '*-build'
-
+      - '*-build*'
+  
 jobs:   
   gradle:
     runs-on: ubuntu-latest
@@ -31,3 +31,4 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "build/libs/*.jar"
+        prerelease: ${{ endsWith( github.ref_name, 'pre' ) }}
