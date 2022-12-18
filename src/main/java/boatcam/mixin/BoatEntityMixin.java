@@ -21,10 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static boatcam.config.BoatCamConfig.getConfig;
 import static boatcam.BoatCamMod.getImpulseAndClearBuffer;
-import static boatcam.BoatCamMod.saveMu;
-import static boatcam.BoatCamMod.saveOmega;
-import static boatcam.BoatCamMod.getOmega;
-import static boatcam.BoatCamMod.getMu;
+import static boatcam.BoatCamMod.saveStates;
 
 @Mixin(BoatEntity.class)
 public class BoatEntityMixin {
@@ -63,13 +60,11 @@ abstract class PaddleMixin {
         if (instance.hasPassengers()) {
             Entity driver = this.getPrimaryPassenger();
             float f = 0.0F;
-            float MAXTORQUE = 1.0F;
+            float MAXTORQUE = 1.0F; // 1 deg per tick-squared = 400 deg per sec-squared
             float steer = getImpulseAndClearBuffer();
             float val = Math.min(1.0F,Math.max(-1.0F,steer + (this.pressingRight?1.0F:0.0F) + (this.pressingLeft?-1.0F:0.0F)));
 
             this.yawVelocity += MAXTORQUE*val;
-            saveOmega(this.yawVelocity);
-            saveMu(this.nearbySlipperiness);
 
             if (val!=0.0F && !this.pressingForward && !this.pressingBack) {
                 f += 0.005F*Math.abs(val);
@@ -86,6 +81,7 @@ abstract class PaddleMixin {
 
             instance.setVelocity(instance.getVelocity().add((double)(MathHelper.sin(-instance.getYaw() * 0.017453292F) * f), 0.0D, (double)(MathHelper.cos(instance.getYaw() * 0.017453292F) * f)));
             instance.setPaddleMovings(val>0 || this.pressingForward, val<0 || this.pressingForward);
+	    saveStates(this.nearbySlipperiness, this.yawVelocity, val);
         }
     }
 }

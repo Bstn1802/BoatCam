@@ -46,24 +46,28 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 
 	// mouse stuff
 	private static double yawAccu = 0;
-	private static float mu = 2;
-	private static float omega = 0;
+	private static float slipper = 0.45F;
+	private static float angVel = 0;
+	private static float angAcc = 0;
+	
 	public static float getImpulseAndClearBuffer() {
 		var temp = yawAccu;
 		yawAccu = 0; 
 		return (float) temp * getSteerSens();
 	}
-	public static void saveMu(float slipperiness) {
-		mu = 20.0F*(1.0F-2.0F*slipperiness);
-	}
-	public static void saveOmega(float yawVel) {
-		omega = (float) toRadians(20.0F*yawVel);
+	public static void saveStates(float lastSlipper, float lastAngVel, float lastAngAcc) {
+		slipper = lastSlipper;
+		angVel = lastAngVel;
+		angAcc = lastAngAcc;
 	}
 	public static float getOmega(){
-		return omega;
+		return (float) toRadians(angVel*20);
 	}
 	public static float getMu(){
-		return mu;
+		return 20F*(1F-2F*slipper);
+	}
+	public static float getT0(){
+		return angAcc;
 	}
 	public static void addImpulse(double delta){
 		yawAccu += delta;
@@ -214,7 +218,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
-				yaw = MathHelper.wrapDegrees(yaw - (float) toDegrees(atan(omega/24F)));
+				yaw = MathHelper.wrapDegrees(yaw - (float) toDegrees(atan(getOmega()/24F)));
 				break;
 			case LINEAR_VELOCITY: // momentum match, original boatcam
 				if (boatPos != null) {

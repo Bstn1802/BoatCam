@@ -1,16 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "boatcam",
+  "id": "boatcam-mouse",
   "version": "${version}",
-  "name": "BoatCam",
-  "description": "Some nice tweaks to the boat and player camera for way cooler drifts on ice :D",
+  "name": "BoatCam-Mouse",
+  "description": "Fork of Bstn's BoatCam with the addition of Mouse Steering",
   "authors": [
-    "Bstn1802"
+    "Bstn1802",
+    "Kevin",
+    "Xeon"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/boatcam",
-    "sources": "https://github.com/Bstn1802/BoatCam",
-    "issues": "https://github.com/Bstn1802/BoatCam/issues"
+    "homepage": "https://github.com/FormulaCraftOne/BoatCam-Mouse",
+    "sources": "https://github.com/FormulaCraftOne/BoatCam-Mouse",
+    "issues": "https://github.com/FormulaCraftOne/BoatCam-Mouse/issues"
   },
   "license": "CC0-1.0",
   "icon": "assets/boatcam/icon.png",
