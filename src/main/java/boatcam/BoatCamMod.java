@@ -1,5 +1,7 @@
 package boatcam;
 
+
+
 import boatcam.config.BoatCamConfig;
 import boatcam.event.LookDirectionChangingEvent;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -18,6 +20,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -41,19 +44,34 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	// states
 	private boolean lookingBehind = false;
 
-        // mouse stuff
+	// mouse stuff
 	private static double yawAccu = 0;
-        public static float getImpulseAndClearBuffer() {
-            var temp = yawAccu;
-            yawAccu = 0; 
-            return (float) temp * getSteerSens();
-        }
-        public static void addImpulse(double delta){
-            yawAccu += delta;
-        }
-        private static float getSteerSens(){
-            return 0.015625F*getConfig().getSensitivity(); 
-        }
+	private static float mu = 2;
+	private static float omega = 0;
+	public static float getImpulseAndClearBuffer() {
+		var temp = yawAccu;
+		yawAccu = 0; 
+		return (float) temp * getSteerSens();
+	}
+	public static void saveMu(float slipperiness) {
+		mu = 20.0F*(1.0F-2.0F*slipperiness);
+	}
+	public static void saveOmega(float yawVel) {
+		omega = (float) toRadians(20.0F*yawVel);
+	}
+	public static float getOmega(){
+		return omega;
+	}
+	public static float getMu(){
+		return mu;
+	}
+	public static void addImpulse(double delta){
+		yawAccu += delta;
+	}
+	private static float getSteerSens(){
+		return 0.015625F*getConfig().getSensitivity(); 
+	}
+
 
 	@Override
 	public void onInitialize() {
@@ -65,6 +83,10 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		AutoConfig.getGuiRegistry(BoatCamConfig.class).registerPredicateTransformer(
 			(guis, s, f, c, d, g) -> dropdownToEnumList(guis, f),
 			field -> BoatCamConfig.Perspective.class.isAssignableFrom(field.getType())
+		);
+		AutoConfig.getGuiRegistry(BoatCamConfig.class).registerPredicateTransformer(
+				(guis, s, f, c, d, g) -> dropdownToEnumListCamMode(guis, f),
+				field -> BoatCamConfig.CamMode.class.isAssignableFrom(field.getType())
 		);
 	}
 
@@ -90,6 +112,29 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 				.build())
 			.map(AbstractConfigListEntry.class::cast)
 			.toList();
+	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<AbstractConfigListEntry> dropdownToEnumListCamMode(List<AbstractConfigListEntry> guis, Field field) {
+		return guis.stream()
+				.filter(DropdownBoxEntry.class::isInstance)
+				.map(DropdownBoxEntry.class::cast)
+				// transform dropdown menu into enum list
+				.map(dropdown -> ConfigEntryBuilder.create()
+						.startEnumSelector(dropdown.getFieldName(), BoatCamConfig.CamMode.class, (BoatCamConfig.CamMode) dropdown.getValue())
+						.setDefaultValue((BoatCamConfig.CamMode) dropdown.getDefaultValue().orElse(null))
+						.setSaveConsumer(p -> {
+							try {
+								field.set(getConfig(), p);
+							} catch (IllegalAccessException ignored) { }
+						})
+						.setEnumNameProvider(cammode -> switch ((BoatCamConfig.CamMode) cammode) {
+							case ANGULAR_VELOCITY -> Text.translatable("text.autoconfig.boatcam.option.cammode.angular");
+							case FIXED -> Text.translatable("text.autoconfig.boatcam.option.cammode.fixed");
+							case LINEAR_VELOCITY -> Text.translatable("text.autoconfig.boatcam.option.cammode.linear");
+						})
+						.build())
+				.map(AbstractConfigListEntry.class::cast)
+				.toList();
 	}
 
 	private void onClientEndWorldTick(ClientWorld world) {
@@ -167,19 +212,28 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		// yaw calculations
 		float yaw = boat.getYaw();
 
-if ( !getConfig().shouldFixYaw() ){
-		if (boatPos != null) {
-			double dz = boat.getZ() - boatPos.z, dx = boat.getX() - boatPos.x;
-			if (dx != 0 || dz != 0) {
-				float vel = (float) hypot(dz, dx);
-				float direction = (float) toDegrees(atan2(dz, dx)) - 90;
-				float t = min(1, vel / 3); // max 70 m/s = 3.5 m/tick on blue ice, cut off at 3
-				yaw = AngleUtil.lerp(t, yaw, direction);
-			}
-			yaw = AngleUtil.lerp(getConfig().getSmoothness(), previousYaw, yaw);
+		switch(getConfig().getCamMode()) {
+			case ANGULAR_VELOCITY: // rotation match
+				yaw = MathHelper.wrapDegrees(yaw - (float) toDegrees(atan(omega/24F)));
+				break;
+			case LINEAR_VELOCITY: // momentum match, original boatcam
+				if (boatPos != null) {
+					double dz = boat.getZ() - boatPos.z, dx = boat.getX() - boatPos.x;
+					if (dx != 0 || dz != 0) {
+						float vel = (float) hypot(dz, dx);
+						float direction = (float) toDegrees(atan2(dz, dx)) - 90;
+						float t = min(1, vel / 3); // max 70 m/s = 3.5 m/tick on blue ice, cut off at 3
+						yaw = AngleUtil.lerp(t, yaw, direction);
+					}
+					yaw = AngleUtil.lerp(getConfig().getSmoothness(), previousYaw, yaw);
+				}
+				break;
+			case FIXED:
+			default:
+			    break;
 		}
+
 		player.setYaw(yaw);
-}
 		// save pos and yaw
 		previousYaw = yaw;
 		boatPos = boat.getPos();
@@ -190,9 +244,10 @@ if ( !getConfig().shouldFixYaw() ){
 		if (getConfig().isBoatMode()) {
 			ClientPlayerEntity player = MinecraftClient.getInstance().player;
 			if (player != null && player.getVehicle() instanceof BoatEntity && (dx != 0 || getConfig().shouldFixPitch() && dy != 0)) {
+				// mouse accumulator
+                addImpulse(dx);
 				// prevent horizontal camera movement and cancel camera change by returning true
 				// prevent vertical movement as well if configured
-                                addImpulse(dx);
 				player.changeLookDirection(0, getConfig().shouldFixPitch() ? 0 : dy);
 				return true;
 			}

@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,6 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static boatcam.config.BoatCamConfig.getConfig;
 import static boatcam.BoatCamMod.getImpulseAndClearBuffer;
+import static boatcam.BoatCamMod.saveMu;
+import static boatcam.BoatCamMod.saveOmega;
+import static boatcam.BoatCamMod.getOmega;
+import static boatcam.BoatCamMod.getMu;
 
 @Mixin(BoatEntity.class)
 public class BoatEntityMixin {
@@ -45,6 +50,7 @@ abstract class PaddleMixin {
     @Shadow private boolean pressingForward;
     @Shadow private boolean pressingBack;
     @Shadow private float yawVelocity;
+    @Shadow private float nearbySlipperiness;
 
 
     @Shadow private double boatYaw;
@@ -60,12 +66,10 @@ abstract class PaddleMixin {
             float MAXTORQUE = 1.0F;
             float steer = getImpulseAndClearBuffer();
             float val = Math.min(1.0F,Math.max(-1.0F,steer + (this.pressingRight?1.0F:0.0F) + (this.pressingLeft?-1.0F:0.0F)));
-/*
-            if( driver instanceof PlayerEntity player) {
-                player.sendMessage(Text.of(Float.toString(val)));
-            }
-*/
+
             this.yawVelocity += MAXTORQUE*val;
+            saveOmega(this.yawVelocity);
+            saveMu(this.nearbySlipperiness);
 
             if (val!=0.0F && !this.pressingForward && !this.pressingBack) {
                 f += 0.005F*Math.abs(val);
