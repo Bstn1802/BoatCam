@@ -39,7 +39,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	// things to remember temporarily
 	private Perspective perspective = null;
 	private Vec3d boatPos = null;
-	private float previousYaw;
+	private float previousYaw = 0;
 
 	// states
 	private boolean lookingBehind = false;
@@ -214,11 +214,18 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 
 	private void calculateYaw(ClientPlayerEntity player, BoatEntity boat) {
 		// yaw calculations
-		float yaw = boat.getYaw();
+		float boatYaw = boat.getYaw();
+		float yaw = boatYaw;
 
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
-				yaw = MathHelper.wrapDegrees(yaw - (float) toDegrees(atan(getOmega()/24F)));
+				float omega = getOmega();
+				float deltaYaw = (float) toDegrees(atan(omega/24F));
+				float rotation = MathHelper.wrapDegrees(boatYaw-previousYaw);
+				if ( omega*deltaYaw > omega*rotation ) {
+					deltaYaw = rotation;
+				}
+				yaw = MathHelper.wrapDegrees(boatYaw - deltaYaw);
 				break;
 			case LINEAR_VELOCITY: // momentum match, original boatcam
 				if (boatPos != null) {
