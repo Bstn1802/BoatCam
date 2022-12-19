@@ -226,7 +226,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 				float deltaYaw = 90F * (float) Math.min(1F,Math.max(-1F,(rawAngVel*20F/Math.sqrt(400F*360F))));
 				float rotation = MathHelper.wrapDegrees(boatYaw-previousYaw);
 				if ( rawAngVel*deltaYaw > rawAngVel*rotation ) {
-					deltaYaw = rotation;
+					deltaYaw = (deltaYaw + rotation)/2F;
 				}
 				yaw = MathHelper.wrapDegrees(boatYaw - deltaYaw);
 				break;
