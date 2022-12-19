@@ -40,6 +40,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	private Perspective perspective = null;
 	private Vec3d boatPos = null;
 	private float previousYaw = 0;
+	private float[] camState = {0,0};
 
 	// states
 	private boolean lookingBehind = false;
@@ -214,6 +215,16 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 			perspective = null;
 		}
 	}
+	
+	private float[2] CriticalImpulseResponse(float t, float d, float v) {
+		float n = (float) Math.sqrt(10)*8/3; // m*x'' + 2*n*x' + k*x = f(t) tuned to boat velocity after frictionless 0-to-180deg
+		float e = Math.exp(-t*n);
+    		return {
+			e * ( d*(1+t*n   ) + v*(  t  ) ) ,
+			e * ( d*( -t*n*n ) + v*(1-t*n) )
+		};
+	}
+		
 
 	private void calculateYaw(ClientPlayerEntity player, BoatEntity boat) {
 		// yaw calculations
@@ -223,13 +234,14 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
 				float rawAngVel = getRawAngVel();
-				float deltaYaw = 90F * (float) Math.min(1F,Math.max(-1F,(rawAngVel*20F/Math.sqrt(400F*360F))));
-				float rotation = MathHelper.wrapDegrees(boatYaw-previousYaw);
-				if ( rawAngVel*deltaYaw > rawAngVel*rotation ) {
-					deltaYaw = rotation;
+				float response = CriticalImpulseResponse(1F/20F, camState[0]-boatYaw, camState[1]);
+				if (response[0]*response[0] >= 8100F) { // if exceed 90deg, clip position and velocity
+					response[0] = 90F*Math.signum(response[0]);
+					response[1] = rawAngVel*20;
 				}
-				yaw = MathHelper.wrapDegrees(boatYaw - deltaYaw);
-				yaw = AngleUtil.lerp(getConfig().getSmoothness(), previousYaw, yaw);
+				camState[0] = response[0] + boatYaw;
+				camState[1] = response[1]
+				yaw = camState[0];
 				break;
 			case LINEAR_VELOCITY: // momentum match, original boatcam
 				if (boatPos != null) {
