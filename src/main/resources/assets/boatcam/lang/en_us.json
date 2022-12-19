@@ -4,7 +4,7 @@
   "text.autoconfig.boatcam.title": "BoatCam Config",
   "text.autoconfig.boatcam.option.boatMode": "Enabled",
   "text.autoconfig.boatcam.option.camMode": "Camera Mode",
-  "text.autoconfig.boatcam.option.smoothness": "Smoothness",
+  "text.autoconfig.boatcam.option.smoothness": "Camera Stiffness",
   "text.autoconfig.boatcam.option.sensitivity": "Steering Sensitivity",
   "text.autoconfig.boatcam.option.perspective": "Perspective",
   "text.autoconfig.boatcam.option.perspective.none": "None",
