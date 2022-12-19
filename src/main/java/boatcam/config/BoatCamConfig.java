@@ -16,7 +16,7 @@ public final class BoatCamConfig implements ConfigData {
     @Comment("Sensitivity of mouse steering, on a semitone scale.")
     @BoundedDiscrete(min = -24, max = 24)
     private int sensitivity = 0;
-    @Comment("1 - Smooth camera, might even lag behind.\n100 - Camera angle might change very abruptly.")
+    @Comment("How quickly the camera should follow the calculated angle\nFixed Mode - No effect\nKartrider Mode - corresponds to critical damping factor\nClassic Mode - corresponds to average-weighting.")
     @BoundedDiscrete(min = 1, max = 100)
     private int smoothness = 50;
     @Comment("Perspective when riding a boat in boat mode. Perspective wont change when this is set to none.")
