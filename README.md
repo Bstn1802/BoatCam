@@ -13,5 +13,5 @@ Fork of [Bstn's BoatCam](https://github.com/Bstn1802/BoatCam) with the addition 
 
 ### Camera Mode
 * Fixed Mode - Anchors view to the boat's heading direction.
-* Classic Mode - Original Bstn's BoatCam model, view follows direction of linear momentum, with damping applied.
+* Classic Mode - Original Bstn's BoatCam model, view follows linear momentum
 * Kartrider Mode - Critically-damped spring model, max stiffness calibrated to 90deg offset on Blue Ice at max turnrate.
