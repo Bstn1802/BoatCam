@@ -46,7 +46,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 
 	// mouse stuff
 	private static double yawAccu = 0;
-	private static float slipper = 0.45F;
+	private static float decay = 0.9F;
 	private static float angVel = 0;
 	private static float angAcc = 0;
 	
@@ -55,19 +55,22 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		yawAccu = 0; 
 		return (float) temp * getSteerSens();
 	}
-	public static void saveStates(float lastSlipper, float lastAngVel, float lastAngAcc) {
-		slipper = lastSlipper;
-		angVel = lastAngVel;
-		angAcc = lastAngAcc;
+	public static void saveStates(float rawDecay, float rawAngVel, float rawAngAcc) {
+		decay  = rawDecay;
+		angVel = rawAngVel;
+		angAcc = rawAngAcc;
+	}
+	public static float getRawAngVel(){
+		return angVel;
+	}
+	public static float getRawAngAcc(){
+		return angAcc;
 	}
 	public static float getOmega(){
 		return (float) toRadians(angVel*20);
 	}
 	public static float getMu(){
-		return 20F*(1F-2F*slipper);
-	}
-	public static float getT0(){
-		return angAcc;
+		return 20F*(1F-decay);
 	}
 	public static void addImpulse(double delta){
 		yawAccu += delta;
@@ -219,10 +222,10 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
-				float omega = getOmega();
-				float deltaYaw = (float) toDegrees(atan(omega/24F));
+				float rawAngVel = getRawAngVel();
+				float deltaYaw = 90F * (rawAngVel*0.22F/20F ) * getConfig().getSmoothness();
 				float rotation = MathHelper.wrapDegrees(boatYaw-previousYaw);
-				if ( omega*deltaYaw > omega*rotation ) {
+				if ( rawAngVel*deltaYaw > rawAngVel*rotation ) {
 					deltaYaw = rotation;
 				}
 				yaw = MathHelper.wrapDegrees(boatYaw - deltaYaw);

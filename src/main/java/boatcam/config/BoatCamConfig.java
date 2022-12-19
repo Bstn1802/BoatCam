@@ -11,11 +11,14 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 public final class BoatCamConfig implements ConfigData {
     @Comment("Whether the camera should be controlled by this mod or not.\nNOTE: This setting can be toggled using a key bind.")
     private boolean boatMode = false;
-    @Comment("FIXED - yaw locked to boat heading.\nANGULAR_VELOCITY - yaw indicates rate of rotation.\nLINEAR_VELOCITY - classic boatcam.")
+    @Comment("Fixed - yaw locked to boat heading.\nAngular Velocity - yaw indicates rate of rotation.\nLinear Velocity - classic boatcam.")
     private CamMode camMode = CamMode.ANGULAR_VELOCITY;
     @Comment("Sensitivity of mouse steering, on a semitone scale.")
     @BoundedDiscrete(min = -24, max = 24)
     private int sensitivity = 0;
+    @Comment("1 - Smooth camera, might even lag behind.\n100 - Camera angle might change very abruptly.")
+    @BoundedDiscrete(min = 1, max = 100)
+    private int smoothness = 50;
     @Comment("Perspective when riding a boat in boat mode. Perspective wont change when this is set to none.")
     private Perspective perspective = Perspective.NONE;
     @Comment("Whether to fix the camera angle at a certain pitch.")
@@ -25,9 +28,6 @@ public final class BoatCamConfig implements ConfigData {
     private int pitch = 25;
     @Comment("Disables the turn limit in a boat.\nNOTE: The turn limit is always disabled in boat mode!")
     private boolean turnLimitDisabled = false;
-    @Comment("1 - Smooth camera, might even lag behind.\n100 - Camera angle might change very abruptly.")
-    @BoundedDiscrete(min = 1, max = 100)
-    private int smoothness = 50;
 
     private BoatCamConfig() { }
 

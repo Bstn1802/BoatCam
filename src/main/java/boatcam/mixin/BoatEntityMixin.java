@@ -47,7 +47,7 @@ abstract class PaddleMixin {
     @Shadow private boolean pressingForward;
     @Shadow private boolean pressingBack;
     @Shadow private float yawVelocity;
-    @Shadow private float nearbySlipperiness;
+    @Shadow private float velocityDecay;
 
 
     @Shadow private double boatYaw;
@@ -81,7 +81,7 @@ abstract class PaddleMixin {
 
             instance.setVelocity(instance.getVelocity().add((double)(MathHelper.sin(-instance.getYaw() * 0.017453292F) * f), 0.0D, (double)(MathHelper.cos(instance.getYaw() * 0.017453292F) * f)));
             instance.setPaddleMovings(val>0 || this.pressingForward, val<0 || this.pressingForward);
-	    saveStates(this.nearbySlipperiness, this.yawVelocity, val);
+	    saveStates(this.velocityDecay, this.yawVelocity, val);
         }
     }
 }
