@@ -223,11 +223,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
 				float rawAngVel = getRawAngVel();
-				float deltaYaw = 90F * (rawAngVel*0.22F/20F ) * getConfig().getSmoothness();
-				float rotation = MathHelper.wrapDegrees(boatYaw-previousYaw);
-				if ( rawAngVel*deltaYaw > rawAngVel*rotation ) {
-					deltaYaw = rotation;
-				}
+				float deltaYaw = 90F * Math.min(1,Math.max(-2,(rawAngVel*20F/Math.sqrt(400F*180F))));
 				yaw = MathHelper.wrapDegrees(boatYaw - deltaYaw);
 				break;
 			case LINEAR_VELOCITY: // momentum match, original boatcam
