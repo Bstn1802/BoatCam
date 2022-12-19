@@ -216,7 +216,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		}
 	}
 	
-	private float[2] CriticalImpulseResponse(float t, float d, float v) {
+	private float[] CriticalImpulseResponse(float t, float d, float v) {
 		float n = (float) Math.sqrt(10)*8/3; // m*x'' + 2*n*x' + k*x = f(t) tuned to boat velocity after frictionless 0-to-180deg
 		float e = Math.exp(-t*n);
 		float[] phi = new float[2];
