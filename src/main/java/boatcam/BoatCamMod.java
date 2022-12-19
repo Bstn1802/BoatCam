@@ -219,7 +219,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	private float[2] CriticalImpulseResponse(float t, float d, float v) {
 		float n = (float) Math.sqrt(10)*8/3; // m*x'' + 2*n*x' + k*x = f(t) tuned to boat velocity after frictionless 0-to-180deg
 		float e = Math.exp(-t*n);
-    		return {
+		return {
 			e * ( d*(1+t*n   ) + v*(  t  ) ) ,
 			e * ( d*( -t*n*n ) + v*(1-t*n) )
 		};
@@ -234,13 +234,14 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		switch(getConfig().getCamMode()) {
 			case ANGULAR_VELOCITY: // rotation match
 				float rawAngVel = getRawAngVel();
-				float response = CriticalImpulseResponse(1F/20F, camState[0]-boatYaw, camState[1]);
+				float deltaYaw = MathHelper.wrapDegrees(camState[0]-boatYaw);
+				float response = CriticalImpulseResponse(1F/20F, deltaYaw, camState[1]);
 				if (response[0]*response[0] >= 8100F) { // if exceed 90deg, clip position and velocity
 					response[0] = 90F*Math.signum(response[0]);
 					response[1] = rawAngVel*20;
 				}
-				camState[0] = response[0] + boatYaw;
-				camState[1] = response[1]
+				camState[0] = MathHelper.wrapDegrees(boatYaw + response[0]);
+				camState[1] = response[1];
 				yaw = camState[0];
 				break;
 			case LINEAR_VELOCITY: // momentum match, original boatcam
