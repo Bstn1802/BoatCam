@@ -11,12 +11,12 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 public final class BoatCamConfig implements ConfigData {
     @Comment("Whether the camera should be controlled by this mod or not.\nNOTE: This setting can be toggled using a key bind.")
     private boolean boatMode = false;
-    @Comment("Fixed - yaw locked to boat heading.\nAngular Velocity - yaw indicates rate of rotation.\nLinear Velocity - classic boatcam.")
+    @Comment("Fixed - yaw follows boat heading.\nKartrider - yaw follows rate of rotation.\nClassic - yaw follows boat velocity.")
     private CamMode camMode = CamMode.ANGULAR_VELOCITY;
     @Comment("Sensitivity of mouse steering, on a semitone scale.")
     @BoundedDiscrete(min = -24, max = 24)
     private int sensitivity = 0;
-    @Comment("How quickly the camera should follow the calculated angle\nFixed Mode - No effect\nKartrider Mode - corresponds to critical damping factor\nClassic Mode - corresponds to average-weighting.")
+    @Comment("How quickly the camera should follow the calculated angle.\nFixed Mode - No effect\nKartrider Mode - corresponds to critical damping factor\nClassic Mode - corresponds to average-weighting.")
     @BoundedDiscrete(min = 1, max = 100)
     private int smoothness = 50;
     @Comment("Perspective when riding a boat in boat mode. Perspective wont change when this is set to none.")
