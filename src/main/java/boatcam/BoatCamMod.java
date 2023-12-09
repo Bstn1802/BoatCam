@@ -126,6 +126,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		} else {
 			// first tick after disabling boat mode or leaving boat
 			if (perspective != null) {
+                boatPos = null;
 				resetPerspective();
 				// invert pitch if looking behind
 				if (lookingBehind) {
