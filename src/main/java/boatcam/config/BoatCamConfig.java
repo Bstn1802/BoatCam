@@ -11,7 +11,7 @@ import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.Comment;
 public final class BoatCamConfig implements ConfigData {
     @Comment("Whether the camera should be controlled by this mod or not.\nNOTE: This setting can be toggled using a key bind.")
     private boolean boatMode = false;
-    @Comment("1 - Smooth camera, might even lag behind.\n100 - Camera angle might change very abruptly.")
+    @Comment("1 - Smooth camera, might even lag behind.\n100 - Disable smoothening.")
     @BoundedDiscrete(min = 1, max = 100)
     private int smoothness = 50;
     @Comment("Perspective when riding a boat in boat mode. Perspective wont change when this is set to none.")

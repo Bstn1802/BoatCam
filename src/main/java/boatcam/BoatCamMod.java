@@ -126,6 +126,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 		} else {
 			// first tick after disabling boat mode or leaving boat
 			if (perspective != null) {
+                boatPos = null;
 				resetPerspective();
 				// invert pitch if looking behind
 				if (lookingBehind) {
@@ -152,7 +153,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 	private void calculateYaw(ClientPlayerEntity player, BoatEntity boat) {
 		// yaw calculations
 		float yaw = boat.getYaw();
-		if (boatPos != null) {
+		if (boatPos != null && getConfig().getSmoothness() < 1) {
 			double dz = boat.getZ() - boatPos.z, dx = boat.getX() - boatPos.x;
 			if (dx != 0 || dz != 0) {
 				float vel = (float) hypot(dz, dx);
@@ -161,7 +162,7 @@ public class BoatCamMod implements ModInitializer, LookDirectionChangingEvent {
 				yaw = AngleUtil.lerp(t, yaw, direction);
 			}
 			yaw = AngleUtil.lerp(getConfig().getSmoothness(), previousYaw, yaw);
-		}
+        }
 		player.setYaw(yaw);
 		// save pos and yaw
 		previousYaw = yaw;
